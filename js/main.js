@@ -31,9 +31,8 @@ const halfAlementWidth = element.offsetWidth / 2;
 const halfAlementWidth2 = element2.offsetWidth / 2;
 
 function setPosition(x, y) {
-  element2.style.transform = `translate(${x - halfAlementWidth2 + 1}px, ${
-    y - halfAlementWidth2 + 1
-  }px)`;
+  element2.style.transform = `translate(${x - halfAlementWidth2 + 1}px, ${y - halfAlementWidth2 + 1
+    }px)`;
 }
 
 body.addEventListener("mousemove", (e) => {
@@ -241,21 +240,21 @@ function time() {
   }
   $("#time").html(
     y +
-      "&nbsp;年&nbsp;" +
-      mm +
-      "&nbsp;月&nbsp;" +
-      d +
-      "&nbsp;日&nbsp;" +
-      "<span class='weekday'>" +
-      weekday[day] +
-      "</span><br>" +
-      "<span class='time-text'>" +
-      h +
-      ":" +
-      m +
-      ":" +
-      s +
-      "</span>"
+    "&nbsp;年&nbsp;" +
+    mm +
+    "&nbsp;月&nbsp;" +
+    d +
+    "&nbsp;日&nbsp;" +
+    "<span class='weekday'>" +
+    weekday[day] +
+    "</span><br>" +
+    "<span class='time-text'>" +
+    h +
+    ":" +
+    m +
+    ":" +
+    s +
+    "</span>"
   );
   t = setTimeout(time, 1000);
 }
@@ -359,7 +358,7 @@ $("#switchmore").on("click", function () {
   } else {
     $("#container").attr("class", "container");
     $("#change").html("Hello&nbsp;World&nbsp;!");
-    $("#change1").html("一个不正经的Up");
+    $("#change1").html("一个业余爱好者");
   }
 });
 
@@ -408,7 +407,7 @@ window.addEventListener("load", function () {
       //移动端隐藏更多页面
       $("#container").attr("class", "container");
       $("#change").html("Hello&nbsp;World&nbsp;!");
-      $("#change1").html("一个不正经的Up");
+      $("#change1").html("一个业余爱好者");
 
       //移动端隐藏弹窗页面
       $("#box").css("display", "none");
