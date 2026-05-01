@@ -157,6 +157,8 @@ createApp({
         searchOpen: false,
         searchText: '',
         searchAnimating: false,
+        searchVisible: false,
+        searchClosing: false,
         showEngineMenu: false,
         searchEngines: loadSearchEngines(),
         currentEngineId: loadCurrentEngineId(),
@@ -164,6 +166,8 @@ createApp({
         newEngineUrl: '',
         timeStr: '',
         moreOpen: false,
+        moreAnimating: false,
+        moreClosing: false,
         boxOpen: false,
         menuOpen: false,
         mobileRight: false,
@@ -310,12 +314,28 @@ createApp({
         openSearch() {
             if (this.searchAnimating) return;
             this.searchAnimating = true;
+            this.searchClosing = false;
             this.searchOpen = true;
             this.showEngineMenu = false;
-            setTimeout(() => { const i = this.$refs.searchInput; if (i) i.focus(); }, 850);
-            setTimeout(() => { this.searchAnimating = false; }, 1500);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    this.searchVisible = true;
+                });
+            });
+            setTimeout(() => { const i = this.$refs.searchInput; if (i) i.focus(); }, 520);
+            setTimeout(() => { this.searchAnimating = false; }, 900);
         },
-        closeSearch() { this.searchOpen = false; this.searchText = ''; },
+        closeSearch() {
+            this.searchClosing = true;
+            this.searchVisible = false;
+            this.showEngineMenu = false;
+            setTimeout(() => {
+                this.searchOpen = false;
+                this.searchClosing = false;
+                this.searchVisible = false;
+                this.searchText = '';
+            }, 360);
+        },
         doSearch() {
             const q = this.searchText.trim();
             if (!q) return;
@@ -390,7 +410,25 @@ createApp({
             setTimeout(() => { this.hitokotoLoading = false; }, 1100);
         },
         /* more */
-        toggleMore() { this.moreOpen = !this.moreOpen; },
+        toggleMore() {
+            if (!this.moreOpen) {
+                this.moreClosing = false;
+                this.moreAnimating = true;
+                this.moreOpen = true;
+                setTimeout(() => { this.moreAnimating = false; }, 1150);
+                return;
+            }
+            this.closeMorePanel();
+        },
+        closeMorePanel() {
+            if (!this.moreOpen || this.moreClosing) return;
+            this.moreClosing = true;
+            this.moreAnimating = false;
+            setTimeout(() => {
+                this.moreOpen = false;
+                this.moreClosing = false;
+            }, 520);
+        },
         useSearchPreset(preset) {
             if (!preset || !preset.query) return;
             this.searchText = preset.query;

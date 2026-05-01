@@ -9,7 +9,7 @@
     <title>loker66fan|MyIndex</title>
     <link rel="stylesheet" type="text/css" href="./vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/bootstrap-fallback.css">
-    <link rel="stylesheet" type="text/css" href="./css/theme.css?v=6">
+    <link rel="stylesheet" type="text/css" href="./css/theme.css?v=13">
     <link rel="stylesheet" type="text/css" href="./css/weather.css?v=2">
     <link rel="stylesheet" type="text/css" href="./css/music-player.css?v=3">
     <link rel="icon" href="./favicon.ico">
@@ -46,23 +46,23 @@
             <div class="ambient-layer ambient-layer-one"></div>
             <div class="ambient-layer ambient-layer-two"></div>
             <div class="ambient-grid"></div>
-            <div class="close-btn" v-show="searchOpen" @click="closeSearch">
+            <div class="close-btn" v-show="searchOpen" :class="{ visible: searchOpen && !searchClosing }" @click="closeSearch">
                 <span class="fas fa-times"></span>
             </div>
-            <div class="search-btn" v-show="!searchOpen" @click="openSearch">
+            <div class="search-btn" v-show="!searchOpen || searchClosing" :class="{ leaving: searchOpen || searchClosing }" @click="openSearch">
                 <span class="fas fa-search"></span>
             </div>
             <!-- 搜索引擎选择器 -->
-            <div class="search-engine-bar" v-show="!searchOpen && !showEngineMenu">
+            <div class="search-engine-bar" v-show="(!searchOpen || searchClosing) && !showEngineMenu" :class="{ leaving: searchOpen || searchClosing }">
                 <div class="engine-badge" @click="cycleSearchEngine" :title="'当前: ' + currentEngine.name + ' (点击切换)'">
                     <img v-if="currentEngine.icon" class="engine-favicon" :src="currentEngine.icon" />
                     <i v-else class="fa-solid fa-magnifying-glass"></i>
                     <span class="engine-name">{{ currentEngine.name }}</span>
                 </div>
             </div>
-            <div class="search-data" v-show="searchOpen">
+            <div class="search-data" v-show="searchOpen" :class="{ active: searchVisible && !searchClosing, closing: searchClosing }">
                 <input type="text" ref="searchInput" v-model="searchText" @keydown.enter="doSearch" />
-                <div class="search-line" :class="{ active: searchOpen }"></div>
+                <div class="search-line" :class="{ active: searchVisible && !searchClosing }"></div>
                 <label v-show="!searchText">请输入....</label>
                 <div class="search-engine-switch" @click.stop="showEngineMenu = !showEngineMenu" :title="currentEngine.name">
                     <img v-if="currentEngine.icon" class="engine-favicon-small" :src="currentEngine.icon" />
@@ -81,7 +81,7 @@
                     <i v-if="e.id === currentEngine.id" class="fa-solid fa-check" style="margin-left:auto;color:#a78bfa;"></i>
                 </div>
                 <div class="engine-menu-divider"></div>
-                <div class="engine-menu-item" @click="showEngineMenu = false; moreOpen = true; accordion3Open = true">
+                <div class="engine-menu-item" @click="showEngineMenu = false; moreAnimating = true; moreClosing = false; moreOpen = true; accordion3Open = true; setTimeout(() => { moreAnimating = false; }, 1150)">
                     <i class="fa-solid fa-gear"></i>
                     <span>管理搜索引擎</span>
                 </div>
@@ -91,7 +91,7 @@
                 <div class="row" :class="{ menus: menuOpen }">
 
                     <!-- 左栏 -->
-                    <div class="col left">
+                    <div class="col left" :class="{ shifting: moreAnimating || moreClosing }">
                         <div class="main-left">
                             <div class="profile-panel cards">
                                 <div class="hero-pills">
@@ -258,12 +258,12 @@
                 </div>
 
                 <!-- 更多面板 -->
-                <div class="more" v-show="moreOpen">
-                    <div class="close" @click="moreOpen = false"><i class="fa-solid fa-circle-xmark"></i></div>
-                    <div class="line" style="margin-top:1rem;">
+                <div class="more" v-show="moreOpen || moreClosing" :class="{ opening: moreAnimating, closing: moreClosing }">
+                    <div class="close" @click="closeMorePanel"><i class="fa-solid fa-circle-xmark"></i></div>
+                    <div class="line more-reveal more-reveal-1" style="margin-top:1rem;">
                         <i class="fa-solid fa-angle-left"></i>&nbsp;时间胶囊&nbsp;<i class="fa-solid fa-angle-right"></i>
                     </div>
-                    <div class="date">
+                    <div class="date more-reveal more-reveal-2">
                         <div class="item" v-for="p in progressItems" :key="p.label">
                             <div class="date-text">{{ p.label }}已经度过了&nbsp;{{ p.value }}&nbsp;{{ p.unit }}</div>
                             <div class="progress">
@@ -271,28 +271,28 @@
                             </div>
                         </div>
                     </div>
-                    <div class="line">
+                    <div class="line more-reveal more-reveal-3">
                         <i class="fa-solid fa-angle-left"></i>&nbsp;杂七杂八&nbsp;<i class="fa-solid fa-angle-right"></i>
                     </div>
-                    <div class="row" v-for="chunk in extraLinkChunks" :key="chunk[0].name" style="margin-top:1.5rem;">
+                    <div class="row more-reveal more-reveal-4" v-for="chunk in extraLinkChunks" :key="chunk[0].name" style="margin-top:1.5rem;">
                         <div class="col" v-for="l in chunk" :key="l.name">
                             <a v-if="!l.isMore" :href="l.url" target="_blank">
                                 <div class="link-card cards"><span class="link-name">{{ l.name }}</span></div>
                             </a>
-                            <a v-else @click="boxOpen = true; moreOpen = false">
+                            <a v-else @click="boxOpen = true; closeMorePanel()">
                                 <div class="link-card cards"><span class="link-name">{{ l.name }}</span></div>
                             </a>
                         </div>
                     </div>
-                    <div class="line">
+                    <div class="line more-reveal more-reveal-5">
                         <i class="fa-solid fa-angle-left"></i>&nbsp;设置&nbsp;<i class="fa-solid fa-angle-right"></i>
                     </div>
-                    <div class="accordion" style="margin-top:0.5rem;">
+                    <div class="accordion more-reveal more-reveal-6" style="margin-top:0.5rem;">
                         <div class="accordion-item">
                             <button class="accordion-button" :class="{ collapsed: !accordion1Open }" @click="accordion1Open = !accordion1Open; accordion2Open = false">
                                 壁纸设置
                             </button>
-                            <div :class="{ show: accordion1Open }" :style="{ display: accordion1Open ? 'block' : 'none' }">
+                            <div class="accordion-panel" :class="{ show: accordion1Open }">
                                 <div class="accordion-body">
                                     <div class="set">
                                         <p style="font-size:0.76rem;color:rgba(255,255,255,0.45);margin:0 0 10px;">
@@ -312,7 +312,7 @@
                             <button class="accordion-button" :class="{ collapsed: !accordion3Open }" @click="accordion3Open = !accordion3Open; accordion1Open = false; accordion2Open = false">
                                 搜索引擎
                             </button>
-                            <div :class="{ show: accordion3Open }" :style="{ display: accordion3Open ? 'block' : 'none' }">
+                            <div class="accordion-panel" :class="{ show: accordion3Open }">
                                 <div class="accordion-body">
                                     <div class="upnote">
                                         <p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">选择一个搜索引擎或添加自定义引擎</p>
@@ -349,7 +349,7 @@
                             <button class="accordion-button" :class="{ collapsed: !accordion2Open }" @click="accordion2Open = !accordion2Open; accordion1Open = false; accordion3Open = false">
                                 更新日志
                             </button>
-                            <div :class="{ show: accordion2Open }" :style="{ display: accordion2Open ? 'block' : 'none' }">
+                            <div class="accordion-panel" :class="{ show: accordion2Open }">
                                 <div class="accordion-body">
                                     <div class="upnote">
                                         <span class="uptext" v-for="u in updates" :key="u.text">
@@ -483,7 +483,7 @@
 <script src="./vendor/vue/vue.global.prod.js"></script>
 <script src="./vendor/aplayer/APlayer.min.js"></script>
 <script src="./vendor/izitoast/iziToast.min.js"></script>
-<script src="./js/app.js?v=5"></script>
+<script src="./js/app.js?v=9"></script>
 <script src="./js/weather-app.js?v=2"></script>
 </body>
 </html>

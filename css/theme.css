@@ -341,6 +341,20 @@ main {
     box-shadow: 0 22px 50px rgba(15, 23, 42, 0.22);
     backdrop-filter: blur(22px) saturate(150%);
     -webkit-backdrop-filter: blur(22px) saturate(150%);
+    opacity: 0;
+    transform-origin: top center;
+    transform: translateX(-50%) scaleX(0.78) scaleY(0.88) translateY(-10px);
+    transition: opacity 0.36s ease, transform 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.search-data.active {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1) scaleY(1) translateY(0);
+}
+
+.search-data.closing {
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0.86) scaleY(0.92) translateY(-6px);
 }
 
 .search-btn {
@@ -357,7 +371,13 @@ main {
     border-radius: 50%;
     background: linear-gradient(135deg, #6366f1, #22d3ee);
     box-shadow: 0 12px 36px rgba(99, 102, 241, 0.36);
-    transition: all 0.35s;
+    transition: all 0.48s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.search-btn.leaving {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.72);
+    pointer-events: none;
 }
 
 .search-btn:hover {
@@ -394,7 +414,7 @@ main {
     left: 16px;
     transform: scaleX(0);
     transform-origin: center;
-    transition: transform 0.4s 0.3s ease;
+    transition: transform 0.68s 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 2px;
     pointer-events: none;
 }
@@ -435,7 +455,14 @@ main {
     font-size: 25px;
     color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
-    transition: color 0.25s;
+    transition: color 0.25s, opacity 0.3s ease, transform 0.38s ease;
+    opacity: 0;
+    transform: scale(0.86) rotate(-10deg);
+}
+
+.close-btn.visible {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
 }
 
 .close-btn:hover { color: #fff; }
@@ -447,6 +474,14 @@ main {
     top: 108px;
     left: 50%;
     transform: translateX(-50%);
+    opacity: 1;
+    transition: opacity 0.32s ease, transform 0.42s ease;
+}
+
+.search-engine-bar.leaving {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+    pointer-events: none;
 }
 
 .engine-badge {
@@ -884,14 +919,28 @@ span.link-name { font-size: 1.1rem; font-weight: 500; }
     padding: 30px;
     overflow-y: auto;
     box-shadow: 0 26px 60px rgba(0,0,0,0.26);
+    opacity: 0;
+    transform: translate3d(26px, 0, 0) scale(0.97);
 }
 
 .mores .more {
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    animation: fadeUp 0.35s ease;
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition: opacity 0.42s ease, transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
     overflow-y: auto;
+}
+
+.mores .more.opening {
+    animation: panelSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.more.closing {
+    opacity: 0;
+    transform: translate3d(34px, 0, 0) scale(0.97);
+    transition: opacity 0.34s ease, transform 0.52s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .more .row {
@@ -915,6 +964,70 @@ span.link-name { font-size: 1.1rem; font-weight: 500; }
 .close:hover {
     color: #fff;
     transform: scale(1.15);
+}
+
+@keyframes panelSlideIn {
+    from {
+        opacity: 0;
+        transform: translate3d(44px, 0, 0) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+.more-reveal {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mores .more.opening .more-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: moreItemReveal 0.64s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mores .more.opening .more-reveal-1 { animation-delay: 0.08s; }
+.mores .more.opening .more-reveal-2 { animation-delay: 0.16s; }
+.mores .more.opening .more-reveal-3 { animation-delay: 0.24s; }
+.mores .more.opening .more-reveal-4 { animation-delay: 0.32s; }
+.mores .more.opening .more-reveal-5 { animation-delay: 0.4s; }
+.mores .more.opening .more-reveal-6 { animation-delay: 0.48s; }
+
+@keyframes moreItemReveal {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.more.closing .more-reveal {
+    opacity: 1;
+    transform: translateY(0);
+    animation: moreItemHide 0.26s ease forwards;
+}
+
+.more.closing .more-reveal-1 { animation-delay: 0s; }
+.more.closing .more-reveal-2 { animation-delay: 0.03s; }
+.more.closing .more-reveal-3 { animation-delay: 0.06s; }
+.more.closing .more-reveal-4 { animation-delay: 0.09s; }
+.more.closing .more-reveal-5 { animation-delay: 0.12s; }
+.more.closing .more-reveal-6 { animation-delay: 0.15s; }
+
+@keyframes moreItemHide {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 }
 
 .mores .link-card { height: 48px !important; }
@@ -991,7 +1104,21 @@ span.link-name { font-size: 1.1rem; font-weight: 500; }
     color: #a78bfa;
 }
 
+.accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+}
+
+.accordion-panel.show {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+
 .accordion-body {
+    min-height: 0;
+    overflow: hidden;
     padding: 1rem 0 !important;
     background: rgba(255, 255, 255, 0.03);
     border-radius: 0 0 12px 12px;
@@ -1241,6 +1368,7 @@ footer {
         top: 8%;
         border-radius: 18px 18px 0 0;
         padding: 20px 14px;
+        transform: translate3d(0, 22px, 0) scale(0.98);
     }
     .mores .col.right { display: none; }
     .mores .more { display: flex !important; }
@@ -1430,12 +1558,21 @@ main {
     flex: 0 0 460px;
     max-width: 460px;
     display: flex;
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    transform-origin: left center;
+    transition: opacity 0.52s ease, transform 1.02s cubic-bezier(0.16, 1, 0.3, 1), flex-basis 0.52s ease, max-width 0.52s ease;
 }
 
 .col.right {
     flex: 1 1 auto;
     max-width: calc(100% - 488px);
     display: flex;
+    transition: max-width 0.58s cubic-bezier(0.16, 1, 0.3, 1), transform 0.42s ease;
+}
+
+.col.left.shifting {
+    transform: translate3d(-42px, 0, 0) scale(0.985);
 }
 
 .main-left,
