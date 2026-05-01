@@ -1,21 +1,49 @@
-# [hsBUPT.github.io]()
+# 个人导航首页
 
------------------------------------------------------------------------------------------------
+这是一个基于 Vue 3 全局版本实现的个人导航首页项目，适合部署为静态站点。页面集成了搜索、常用链接、天气、音乐播放器、壁纸切换以及响应式布局优化。
 
-## This project is adapted from GitHub imsyy's home. You can fork it to your own repository and name it `username.github.io`, then run it!
+## 当前特性
 
-### update log
+- Vue 驱动的首页交互
+- 多搜索引擎切换与自定义搜索引擎
+- 快捷搜索预设词
+- 一言展示与实时时间
+- 天气弹窗
+- 音乐播放器与歌单管理
+- 壁纸切换与本地持久化
+- 可滚动布局与移动端适配
 
-#### Ver 1.1
+## 运行方式
 
-**Search boxes and styles have been added to the original author, ~~and click events and search engines will be added later.~~** **Join the search engine and optimize the search experience.Join the search engine and optimize the search experience.**
+这是纯静态项目，不依赖构建工具。
 
-![search-btn](https://img1.imgtp.com/2023/06/03/7iz95ogk.png)
+直接用任意静态服务器打开项目目录即可，例如：
 
-![search-line](https://img1.imgtp.com/2023/06/03/bG5fqM9L.png)
+```bash
+python -m http.server 8080
+```
 
-### Tips
+然后访问：
 
-**After I add the search engine, You can set this Demo as the browser home page through the edge Settings.**
+```text
+http://localhost:8080
+```
 
-![](https://img1.imgtp.com/2023/06/03/GSytnrP1.png)
+## 主要文件
+
+- `index.html`：页面入口与模板结构
+- `js/app.js`：主应用逻辑
+- `js/weather-app.js`：天气模块
+- `css/theme.css`：主样式
+- `css/weather.css`：天气弹窗样式
+- `css/music-player.css`：播放器样式
+
+## 文档
+
+- [技术文档](./docs/技术文档.md)
+- [开发日志](./docs/开发日志.md)
+- [学习日志](./docs/学习日志.md)
+
+## 说明
+
+项目最初参考了 imsyy 的个人主页实现，后续已围绕个人导航场景持续做了结构和交互重构。

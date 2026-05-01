@@ -140,70 +140,9 @@ $("#hitokoto").click(function () {
   }
 });
 
-// 获取天气
-// 请前往 https://www.mxnzp.com/doc/list 申请 app_id 和 app_secret
-const mainKey = "223387fd2067c6848a83571ab60063d1"; // 高德开发者 Key
-const getWeather = () => {
-  fetch(`https://restapi.amap.com/v3/ip?key=${mainKey}`)
-    .then((response) => response.json())
-    .then((res) => {
-      const adcode = res.adcode;
-      $("#city_text").html(res.city);
-      fetch(
-        `https://restapi.amap.com/v3/weather/weatherInfo?key=${mainKey}&city=${adcode}`
-      )
-        .then((response) => response.json())
-        .then((res) => {
-          if (res.status) {
-            $("#wea_text").html(res.lives[0].weather);
-            $("#tem_text").html(res.lives[0].temperature + "°C&nbsp;");
-            $("#win_text").html(res.lives[0].winddirection + "风");
-            $("#win_speed").html(res.lives[0].windpower + "级");
-          } else {
-            console.error("天气信息获取失败");
-            iziToast.show({
-              timeout: 2000,
-              icon: "fa-solid fa-cloud-sun",
-              message: "天气信息获取失败",
-            });
-          }
-        });
-    })
-    .catch((err) => {
-      console.error("天气信息获取失败：" + err);
-      iziToast.show({
-        timeout: 2000,
-        icon: "fa-solid fa-cloud-sun",
-        message: "天气信息获取失败",
-      });
-    });
-};
-
-getWeather();
-
-let wea = 0;
 $("#upWeather").click(function () {
-  if (wea == 0) {
-    wea = 1;
-    let index = setInterval(function () {
-      wea--;
-      if (wea == 0) {
-        clearInterval(index);
-      }
-    }, 60000);
-    getWeather();
-    iziToast.show({
-      timeout: 2000,
-      icon: "fa-solid fa-cloud-sun",
-      message: "实时天气已更新",
-    });
-  } else {
-    iziToast.show({
-      timeout: 1000,
-      icon: "fa-solid fa-circle-exclamation",
-      message: "请稍后再更新哦",
-    });
-  }
+  const vm = window.__weatherApp;
+  if (vm) vm.open();
 });
 
 //获取时间
