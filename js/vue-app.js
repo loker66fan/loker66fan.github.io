@@ -33,7 +33,11 @@ const SOCIAL_HINTS = {
 const MOURNING_DAYS = ['4.4', '5.12', '7.7', '9.9', '9.18', '12.13'];
 
 const UPDATES = [
-    { icon: 'fa-solid fa-circle-plus', text: '加快网页相应速度 By.阿坤' },
+    { icon: 'fa-solid fa-circle-plus', text: '壁纸支持重复点击刷新新背景' },
+    { icon: 'fa-solid fa-screwdriver-wrench', text: '修复搜索栏特效位置偏移' },
+    { icon: 'fa-solid fa-screwdriver-wrench', text: '优化长备注显示与卡片排版' },
+    { icon: 'fa-solid fa-link', text: '统一博客入口链接为 zy.loker.ltd' },
+    { icon: 'fa-solid fa-circle-plus', text: '加快网页相应速度' },
     { icon: 'fa-solid fa-circle-plus', text: '添加搜索框及动画css样式' },
     { icon: 'fa-solid fa-circle-plus', text: '音乐歌单支持快速自定义' },
     { icon: 'fa-solid fa-circle-plus', text: '壁纸支持个性化设置' },
@@ -41,7 +45,6 @@ const UPDATES = [
     { icon: 'fa-solid fa-screwdriver-wrench', text: '修复天气 API' },
     { icon: 'fa-solid fa-screwdriver-wrench', text: '时光胶囊显示错误' },
     { icon: 'fa-solid fa-screwdriver-wrench', text: '移动端动画及细节' },
-    { icon: 'fa-solid fa-screwdriver-wrench', text: '图标更换为 Font Awesome' },
 ];
 
 const FALLBACK_PLAYLIST = [
@@ -96,9 +99,9 @@ const app = createMainApp({
             lrcInterval: null,
             wallpaperOptions: [
                 { value: '1', label: '默认壁纸' },
-                { value: '2', label: '必应每日' },
-                { value: '3', label: '随机风景' },
-                { value: '4', label: '随机动漫' },
+                { value: '2', label: '必应每日 · 换一张' },
+                { value: '3', label: '随机风景 · 换一张' },
+                { value: '4', label: '随机动漫 · 换一张' },
             ],
             LINKS,
             EXTRA_LINKS,

@@ -19,6 +19,11 @@ const EXTRA_LINKS = [
 ];
 
 const UPDATES = [
+    { icon: 'fa-solid fa-circle-plus', text: '壁纸支持重复点击刷新新背景' },
+    { icon: 'fa-solid fa-circle-plus', text: '音乐播放器支持网易云歌单 ID 自定义' },
+    { icon: 'fa-solid fa-screwdriver-wrench', text: '修复搜索栏特效位置偏移' },
+    { icon: 'fa-solid fa-screwdriver-wrench', text: '优化长备注显示与卡片排版' },
+    { icon: 'fa-solid fa-link', text: '统一博客入口链接为 a.loker.love' },
     { icon: 'fa-solid fa-circle-plus', text: '加快网页相应速度 By.阿坤' },
     { icon: 'fa-solid fa-circle-plus', text: '添加搜索框及动画css样式' },
     { icon: 'fa-solid fa-circle-plus', text: '音乐歌单支持快速自定义' },
@@ -34,9 +39,9 @@ const MOURNING_DAYS = ['4.4','5.12','7.7','9.9','9.18','12.13'];
 
 const WALLPAPER_OPTIONS = [
     { value: '1', label: '默认壁纸' },
-    { value: '2', label: '必应每日' },
-    { value: '3', label: '随机风景' },
-    { value: '4', label: '随机动漫' },
+    { value: '2', label: '必应精选 · 换一张' },
+    { value: '3', label: '随机风景 · 换一张' },
+    { value: '4', label: '随机动漫 · 换一张' },
 ];
 
 const FALLBACK = [
@@ -44,6 +49,9 @@ const FALLBACK = [
     { name:'Track 2', artist:'SoundHelix', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', pic:'', lrc:'' },
     { name:'Track 3', artist:'SoundHelix', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', pic:'', lrc:'' },
 ];
+
+const DEFAULT_PLAYLIST_ID = '6924865524';
+const MUSIC_PLAYLIST_COOKIE_KEY = 'music_playlist_id';
 
 const DEFAULT_ENGINES = [
     { id: 'bing',    name: 'Bing',    url: 'https://cn.bing.com/search?q={s}', icon: 'https://www.bing.com/favicon.ico' },
@@ -81,6 +89,51 @@ function loadCurrentEngineId() {
         if (id) return id;
     } catch {}
     return 'bing';
+}
+
+function normalizePlaylistId(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^\d+$/.test(raw)) return raw;
+    const queryMatch = raw.match(/[?&]id=(\d+)/);
+    if (queryMatch) return queryMatch[1];
+    const pathMatch = raw.match(/playlist\/(\d+)/);
+    if (pathMatch) return pathMatch[1];
+    const digitMatch = raw.match(/\d{6,}/);
+    return digitMatch ? digitMatch[0] : '';
+}
+
+function loadMusicPlaylistId() {
+    try {
+        const id = normalizePlaylistId(Cookies.get(MUSIC_PLAYLIST_COOKIE_KEY));
+        if (id) return id;
+    } catch {}
+    return DEFAULT_PLAYLIST_ID;
+}
+
+function saveMusicPlaylistId(id) {
+    Cookies.set(MUSIC_PLAYLIST_COOKIE_KEY, id, { expires: 36500 });
+}
+
+function getMusicPlaylistUrl(id) {
+    return 'https://api.injahow.cn/meting/?server=netease&type=playlist&id=' + encodeURIComponent(id);
+}
+
+function getWallpaperRequestKey() {
+    return Date.now() + '_' + Math.random().toString(36).slice(2) + '_' + Math.floor(Math.random() * 1e9);
+}
+
+function getWallpaperUrl(type, nonce = getWallpaperRequestKey()) {
+    switch (type) {
+        case '2':
+            return 'https://api.dujin.org/bing/1920.php?refresh=' + nonce;
+        case '3':
+            return 'https://api.btstu.cn/sjbz/api.php?lx=fengjing&method=mobile&refresh=' + nonce;
+        case '4':
+            return 'https://www.dmoe.cc/random.php?sort=动漫&refresh=' + nonce;
+        default:
+            return './img/icon/云朵 旷野郊游 线条小狗高清电脑壁纸全屏_彼岸壁纸.jpg';
+    }
 }
 
 const formatTime = s => {
@@ -126,6 +179,9 @@ createApp({
         musicMuted: false,
         musicName: '未播放音乐',
         musicVolume: 0.5,
+        musicPlaylistId: loadMusicPlaylistId(),
+        playlistInput: loadMusicPlaylistId(),
+        musicConfigOpen: false,
         playMode: 'random',
         currentSong: { name:'未播放', artist:'--', pic:'' },
         playlist: [],
@@ -165,6 +221,9 @@ createApp({
         linkChunks() { return chunk(LINKS, 3); },
         linkTotal() { return LINKS.length; },
         extraLinkChunks() { return chunk(EXTRA_LINKS, 3); },
+        isDefaultMusicPlaylist() {
+            return this.musicPlaylistId === DEFAULT_PLAYLIST_ID;
+        },
         progressItems() {
             const n = new Date();
             const ts = new Date(n.toLocaleDateString()).getTime();
@@ -213,8 +272,8 @@ createApp({
                 },
                 {
                     title: '音乐',
-                    value: this.musicInited ? (this.musicPlaying ? '播放中' : '歌单已就绪') : '打开播放器',
-                    desc: this.musicInited ? (this.currentSong.name || '准备切歌') : '加载默认网易歌单',
+                    value: this.musicInited ? (this.musicPlaying ? '播放中' : '歌单已就绪') : (this.isDefaultMusicPlaylist ? '默认歌单' : '自定义歌单'),
+                    desc: this.musicInited ? (this.currentSong.name || '准备切歌') : '支持配置网易云歌单 ID',
                     icon: 'fa-solid fa-compact-disc',
                     action: 'music',
                 },
@@ -372,6 +431,98 @@ createApp({
         },
         /* music */
         openMusicList() { this.boxOpen = true; this.moreOpen = false; },
+        async applyMusicPlaylist() {
+            const playlistId = normalizePlaylistId(this.playlistInput);
+            if (!playlistId) {
+                iziToast.show({ timeout: 2500, icon: 'fa-solid fa-circle-exclamation', message: '请输入有效的网易云歌单 ID 或歌单链接' });
+                return;
+            }
+            await this.loadMusicPlaylist(playlistId, {
+                persist: true,
+                successMessage: '网易云歌单已更新',
+            });
+        },
+        async resetMusicPlaylist() {
+            this.playlistInput = DEFAULT_PLAYLIST_ID;
+            await this.loadMusicPlaylist(DEFAULT_PLAYLIST_ID, {
+                allowFallback: true,
+                persist: true,
+                successMessage: '已恢复默认歌单',
+            });
+        },
+        async fetchMusicPlaylist(playlistId) {
+            const r = await fetch(getMusicPlaylistUrl(playlistId));
+            if (!r.ok) throw Error('http');
+            const d = await r.json();
+            if (!Array.isArray(d) || !d.length) throw Error('empty');
+            return d;
+        },
+        destroyMusicPlayer(resetPlaylist = true) {
+            if (this._lrcTimer) {
+                clearInterval(this._lrcTimer);
+                this._lrcTimer = null;
+            }
+            if (this._timeTimer) {
+                clearInterval(this._timeTimer);
+                this._timeTimer = null;
+            }
+            if (this.aplayerInstance) {
+                try { this.aplayerInstance.destroy(); } catch {}
+                this.aplayerInstance = null;
+            }
+            this.musicInited = false;
+            this.musicPlaying = false;
+            this.currentTime = 0;
+            this.duration = 0;
+            this.currentIndex = 0;
+            if (resetPlaylist) {
+                this.playlist = [];
+                this.currentSong = { name:'未播放', artist:'--', pic:'' };
+                this.musicName = '未播放音乐';
+            }
+            const pw = document.querySelector('.power');
+            const lr = document.getElementById('lrc');
+            if (pw) pw.style.display = 'block';
+            if (lr) {
+                lr.style.display = 'none';
+                lr.innerHTML = '';
+            }
+        },
+        async loadMusicPlaylist(playlistId, { allowFallback = false, persist = false, successMessage = '' } = {}) {
+            const normalizedId = normalizePlaylistId(playlistId);
+            if (!normalizedId || this.musicLoading) return false;
+            const ct = document.getElementById('aplayer-hidden');
+            if (!ct) return false;
+            this.musicLoading = true;
+            let audio = null;
+            let usedFallback = false;
+            try {
+                audio = await this.fetchMusicPlaylist(normalizedId);
+            } catch (e) {
+                if (!allowFallback) {
+                    iziToast.show({ timeout: 3200, icon: 'fa-solid fa-circle-exclamation', message: '歌单加载失败，请检查网易云歌单 ID 是否正确' });
+                    this.musicLoading = false;
+                    return false;
+                }
+                usedFallback = true;
+                audio = FALLBACK;
+                iziToast.show({ timeout: 3200, icon: 'fa-solid fa-triangle-exclamation', message: '网易云歌单加载失败，已切换到内置歌单' });
+            }
+            this.destroyMusicPlayer();
+            this.musicPlaylistId = normalizedId;
+            this.playlistInput = normalizedId;
+            if (persist) saveMusicPlaylistId(normalizedId);
+            this.setupPlayer(audio);
+            this.musicLoading = false;
+            if (successMessage) {
+                iziToast.show({
+                    timeout: 2600,
+                    icon: 'fa-solid fa-circle-check',
+                    message: usedFallback ? successMessage + '，当前使用内置歌单' : successMessage,
+                });
+            }
+            return true;
+        },
         musicToggle() { if (this.aplayerInstance) this.aplayerInstance.toggle(); else this.openMusicList(); },
         musicPrev() { if (this.aplayerInstance) { this.aplayerInstance.skipBack(); this.aplayerInstance.play(); } },
         musicNext() { if (this.aplayerInstance) { this.aplayerInstance.skipForward(); this.aplayerInstance.play(); } },
@@ -421,27 +572,21 @@ createApp({
         tryInitMusic() {
             if (this.musicInited || this.musicLoading) return;
             if (!this.boxOpen) return;
-            const ct = document.getElementById('aplayer-hidden');
-            if (!ct) return;
-            this.musicLoading = true;
-            fetch('https://api.injahow.cn/meting/?server=netease&type=playlist&id=6924865524')
-                .then(r => r.json())
-                .then(d => { if (Array.isArray(d) && d.length) this.setupPlayer(d); else throw Error('empty'); })
-                .catch(() => this.setupPlayer(FALLBACK))
-                .finally(() => { this.musicLoading = false; });
+            this.loadMusicPlaylist(this.musicPlaylistId, { allowFallback: true });
         },
         setupPlayer(audio) {
             const ct = document.getElementById('aplayer-hidden');
-            if (!ct || this.musicInited) return;
+            if (!ct) return;
             this.playlist = audio.map(a => ({
                 name:a.name||'未知歌曲', artist:a.artist||'', pic:a.pic||a.cover||'', lrc:a.lrc||'', url:a.url||''
             }));
             const ap = new APlayer({
-                container: ct, order:'random', preload:'auto', listMaxHeight:'336px',
+                container: ct, order:this.playMode, preload:'auto', listMaxHeight:'336px',
                 volume:this.musicVolume, mutex:true, lrcType:3, audio,
             });
             this.aplayerInstance = ap;
             this.musicInited = true;
+            if (this.musicMuted) ap.volume(0, true);
             this.updateSongMeta();
             this._timeTimer = setInterval(() => {
                 if (ap && ap.audio) {
@@ -474,34 +619,65 @@ createApp({
             ap.on('listswitch', () => this.updateSongMeta());
         },
         /* wallpaper */
-        setWallpaper(t) {
+        async resolveWallpaperUrl(t) {
+            if (t !== '2') return getWallpaperUrl(t);
+            const requestKey = getWallpaperRequestKey();
+            try {
+                const r = await fetch('https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN&refresh=' + requestKey);
+                if (!r.ok) throw Error('http');
+                const d = await r.json();
+                let images = Array.isArray(d.images) ? d.images : [];
+                let urls = images
+                    .map(item => item && item.url ? 'https://cn.bing.com' + item.url : '')
+                    .filter(Boolean);
+                const bg = document.getElementById('bg');
+                const currentSrc = bg ? (bg.dataset.wallpaperSrc || bg.currentSrc || bg.src || '') : '';
+                if (urls.length > 1) {
+                    urls = urls.filter(url => !currentSrc.includes(url));
+                }
+                const next = urls[Math.floor(Math.random() * urls.length)];
+                if (next) return next + (next.includes('?') ? '&' : '?') + 'refresh=' + requestKey;
+            } catch {}
+            return getWallpaperUrl('2', requestKey);
+        },
+        applyWallpaper(bg, src, useRefreshEffect = true) {
+            bg.style.background = '';
+            bg.style.backgroundSize = '';
+            bg.onload = null;
+            bg.onerror = null;
+            bg.dataset.wallpaperSrc = src;
+            if (!useRefreshEffect) {
+                bg.src = src;
+                return;
+            }
+            bg.style.opacity = '0.6';
+            bg.removeAttribute('src');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    bg.onload = () => {
+                        bg.style.opacity = '1';
+                        bg.onload = null;
+                    };
+                    bg.onerror = () => {
+                        bg.style.opacity = '1';
+                        bg.onerror = null;
+                    };
+                    bg.src = src;
+                });
+            });
+        },
+        async setWallpaper(t) {
             this.wallpaperType = t;
             const bg = document.getElementById('bg');
             if (!bg) return;
-            switch (t) {
-                case '1':
-                    bg.src = './img/icon/云朵 旷野郊游 线条小狗高清电脑壁纸全屏_彼岸壁纸.jpg';
-                    bg.style.background = '';
-                    bg.style.backgroundSize = '';
-                    break;
-                case '2':
-                    bg.src = 'https://api.dujin.org/bing/1920.php';
-                    bg.style.background = '';
-                    bg.style.backgroundSize = '';
-                    break;
-                case '3':
-                    bg.src = 'https://api.btstu.cn/sjbz/api.php';
-                    bg.style.background = '';
-                    bg.style.backgroundSize = '';
-                    break;
-                case '4':
-                    bg.src = 'https://www.dmoe.cc/random.php';
-                    bg.style.background = '';
-                    bg.style.backgroundSize = '';
-                    break;
-            }
+            const nextSrc = await this.resolveWallpaperUrl(t);
+            this.applyWallpaper(bg, nextSrc, t !== '1');
             Cookies.set('bg_img', JSON.stringify({ type: t }), { expires: 36500 });
-            iziToast.show({ icon:'fa-solid fa-image', timeout:2500, message:'壁纸设置成功，已生效' });
+            iziToast.show({
+                icon:'fa-solid fa-image',
+                timeout:2500,
+                message: t === '1' ? '默认壁纸已恢复' : '壁纸已刷新，已切换到新图片',
+            });
         },
         initWallpaper() {
             let s;
@@ -580,8 +756,6 @@ createApp({
             'color:rgb(30,152,255);');
     },
     beforeUnmount() {
-        if (this._lrcTimer) clearInterval(this._lrcTimer);
-        if (this._timeTimer) clearInterval(this._timeTimer);
-        if (this.aplayerInstance) this.aplayerInstance.destroy();
+        this.destroyMusicPlayer(false);
     },
 }).mount('#app');

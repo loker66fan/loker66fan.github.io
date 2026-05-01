@@ -9,9 +9,9 @@
     <title>loker66fan|MyIndex</title>
     <link rel="stylesheet" type="text/css" href="./vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/bootstrap-fallback.css">
-    <link rel="stylesheet" type="text/css" href="./css/theme.css?v=5">
+    <link rel="stylesheet" type="text/css" href="./css/theme.css?v=6">
     <link rel="stylesheet" type="text/css" href="./css/weather.css?v=2">
-    <link rel="stylesheet" type="text/css" href="./css/music-player.css?v=2">
+    <link rel="stylesheet" type="text/css" href="./css/music-player.css?v=3">
     <link rel="icon" href="./favicon.ico">
     <link rel="apple-touch-icon" href="./img/icon/apple-touch-icon.png">
     <link rel="stylesheet" href="./vendor/izitoast/iziToast.min.css">
@@ -62,7 +62,7 @@
             </div>
             <div class="search-data" v-show="searchOpen">
                 <input type="text" ref="searchInput" v-model="searchText" @keydown.enter="doSearch" />
-                <div class="line" :class="{ active: searchOpen }"></div>
+                <div class="search-line" :class="{ active: searchOpen }"></div>
                 <label v-show="!searchText">请输入....</label>
                 <div class="search-engine-switch" @click.stop="showEngineMenu = !showEngineMenu" :title="currentEngine.name">
                     <img v-if="currentEngine.icon" class="engine-favicon-small" :src="currentEngine.icon" />
@@ -295,6 +295,9 @@
                             <div :class="{ show: accordion1Open }" :style="{ display: accordion1Open ? 'block' : 'none' }">
                                 <div class="accordion-body">
                                     <div class="set">
+                                        <p style="font-size:0.76rem;color:rgba(255,255,255,0.45);margin:0 0 10px;">
+                                            除默认壁纸外，其他三个选项都支持重复点击刷新一张新背景
+                                        </p>
                                         <div class="wallpaper">
                                             <div class="form-radio" v-for="opt in wallpaperOptions" :key="opt.value" @click="setWallpaper(opt.value)">
                                                 <input type="radio" :id="'radio'+opt.value" :value="opt.value" v-model="wallpaperType" style="display:none;" />
@@ -363,6 +366,36 @@
                 <div class="player-overlay" v-show="boxOpen" @click.self="boxOpen = false">
                     <div class="player-container">
                         <button class="player-close" @click="boxOpen = false"><i class="fa-solid fa-xmark"></i></button>
+                        <div class="player-config-shell">
+                            <button class="player-config-toggle" @click="musicConfigOpen = !musicConfigOpen">
+                                <i class="fa-solid fa-sliders"></i>
+                                {{ musicConfigOpen ? '收起歌单设置' : '歌单设置' }}
+                            </button>
+                            <div class="player-config-panel" v-show="musicConfigOpen">
+                                <div class="player-config-copy">
+                                    <strong>网易云歌单 ID</strong>
+                                    <span>支持直接输入歌单 ID，或粘贴完整歌单链接</span>
+                                </div>
+                                <div class="player-config-form">
+                                    <input
+                                        v-model="playlistInput"
+                                        type="text"
+                                        class="player-config-input"
+                                        placeholder="例如：6924865524"
+                                        @keydown.enter.prevent="applyMusicPlaylist"
+                                    />
+                                    <button class="player-config-btn player-config-btn-primary" @click="applyMusicPlaylist">
+                                        应用
+                                    </button>
+                                    <button class="player-config-btn" @click="resetMusicPlaylist">
+                                        默认
+                                    </button>
+                                </div>
+                                <div class="player-config-meta">
+                                    当前歌单：<code>{{ musicPlaylistId }}</code>
+                                </div>
+                            </div>
+                        </div>
                         <template v-if="musicLoading">
                             <div style="flex:1;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);">
                                 <i class="fa-solid fa-spinner fa-spin"></i>&nbsp;加载歌单...
@@ -450,7 +483,7 @@
 <script src="./vendor/vue/vue.global.prod.js"></script>
 <script src="./vendor/aplayer/APlayer.min.js"></script>
 <script src="./vendor/izitoast/iziToast.min.js"></script>
-<script src="./js/app.js?v=3"></script>
+<script src="./js/app.js?v=5"></script>
 <script src="./js/weather-app.js?v=2"></script>
 </body>
 </html>

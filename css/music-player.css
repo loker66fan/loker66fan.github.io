@@ -62,6 +62,45 @@
   color: #fff;
 }
 
+.player-config-shell {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 64px;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.player-config-toggle,
+.player-config-panel {
+  pointer-events: auto;
+}
+
+.player-config-toggle {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(8, 15, 34, 0.74);
+  backdrop-filter: blur(16px);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.player-config-toggle:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
 /* 左侧封面区 */
 .player-cover-side {
   width: 340px;
@@ -191,9 +230,105 @@
   background: rgba(255,255,255,0.08);
 }
 
+.player-config-panel {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(8, 15, 34, 0.74);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-config-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-config-copy strong {
+  font-size: 0.86rem;
+  color: #fff;
+}
+
+.player-config-copy span {
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.55);
+}
+
+.player-config-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-config-input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  outline: none;
+  font-size: 0.82rem;
+}
+
+.player-config-input::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+
+.player-config-input:focus {
+  border-color: rgba(167, 139, 250, 0.55);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.12);
+}
+
+.player-config-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.78);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+.player-config-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.player-config-btn-primary {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border-color: rgba(167, 139, 250, 0.4);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(99, 102, 241, 0.22);
+}
+
+.player-config-btn-primary:hover {
+  background: linear-gradient(135deg, #7274ff, #b06cff);
+}
+
+.player-config-meta {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.48);
+}
+
+.player-config-meta code {
+  color: #ddd6fe;
+}
+
 /* 进度条 */
 .player-progress-section {
   margin-bottom: 10px;
+  margin-top: 8px;
 }
 
 .player-progress-bar {
@@ -454,9 +589,16 @@
     border-radius: 16px;
   }
 
+  .player-config-shell {
+    position: static;
+    padding: 52px 14px 0;
+    width: 100%;
+    gap: 8px;
+  }
+
   .player-cover-side {
     width: 100%;
-    padding: 20px 14px 6px;
+    padding: 8px 14px 6px;
     flex-shrink: 0;
     flex-direction: row;
     gap: 14px;
@@ -491,6 +633,14 @@
     padding: 6px 16px 16px;
   }
 
+  .player-config-form {
+    flex-wrap: wrap;
+  }
+
+  .player-config-input {
+    width: 100%;
+  }
+
   .player-controls {
     gap: 12px;
     margin-bottom: 10px;
@@ -514,6 +664,25 @@
 }
 
 @media (max-width: 400px) {
+  .player-config-shell {
+    padding: 48px 12px 0;
+  }
+
+  .player-config-toggle {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 0.74rem;
+  }
+
+  .player-config-panel {
+    padding: 12px;
+  }
+
+  .player-config-btn {
+    height: 34px;
+    padding: 0 12px;
+  }
+
   .player-disc { width: 72px; height: 72px; }
   .player-disc-center { width: 20px; height: 20px; }
   .player-cover-title { font-size: 0.82rem; max-width: 160px; }

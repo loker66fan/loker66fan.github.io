@@ -323,11 +323,11 @@ main {
 
 /* ======================== 搜索框 ======================== */
 .search-data {
+    position: fixed;
     top: 36px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 99;
-    position: fixed;
     height: 56px;
     width: min(540px, calc(100vw - 40px));
     display: flex;
@@ -335,6 +335,7 @@ main {
     align-items: center;
     padding: 0 108px 0 22px;
     border-radius: 20px;
+    overflow: hidden;
     background: rgba(8, 15, 34, 0.46);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 22px 50px rgba(15, 23, 42, 0.22);
@@ -383,20 +384,22 @@ main {
     color: var(--text-main);
 }
 
-.search-data .line {
+.search-line {
     z-index: 99;
     position: absolute;
     height: 3px;
-    width: 100%;
+    width: calc(100% - 32px);
     background: linear-gradient(90deg, #6366f1, #22d3ee);
-    bottom: 0;
-    left: 0;
+    bottom: 8px;
+    left: 16px;
     transform: scaleX(0);
+    transform-origin: center;
     transition: transform 0.4s 0.3s ease;
     border-radius: 2px;
+    pointer-events: none;
 }
 
-.search-data .line.active { transform: scaleX(1); }
+.search-line.active { transform: scaleX(1); }
 
 .search-data label {
     z-index: 99;
