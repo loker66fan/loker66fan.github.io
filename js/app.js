@@ -729,6 +729,30 @@ createApp({
             if (window.innerWidth >= 600) this.menuOpen = false;
             if (window.innerWidth <= 990) { this.moreOpen = false; this.boxOpen = false; }
         },
+        revealPage() {
+            if (this.loaded) return;
+            this.loaded = true;
+            const bg = document.getElementById('bg');
+            if (bg) {
+                bg.style.transform = 'scale(1)';
+                bg.style.filter = 'blur(0px)';
+                bg.style.transition = 'ease 1.5s';
+                bg.style.opacity = '1';
+            }
+            const cv = this.$refs.cover;
+            if (cv) cv.style.cssText = 'opacity:1;transition:ease 1.5s;';
+            const sc = this.$refs.section;
+            if (sc) {
+                sc.style.transform = 'scale(1)';
+                sc.style.opacity = '1';
+                sc.style.filter = 'blur(0px)';
+            }
+            setTimeout(() => iziToast.show({ timeout:2500, icon:false, title:this.greetingText, message:'欢迎来到我的主页' }), 800);
+            if (/Mobile/i.test(navigator.userAgent)) {
+                const p = document.getElementById('g-pointer-2');
+                if (p) p.style.display = 'none';
+            }
+        },
     },
     mounted() {
         iziToast.settings({
@@ -744,21 +768,11 @@ createApp({
             this.mourning = true;
             setTimeout(() => iziToast.show({ timeout:14000, icon:'fa-solid fa-clock', message:'今天是中国国家纪念日' }), 4600);
         }
-        window.addEventListener('load', () => {
-            this.loaded = true;
-            const bg = document.getElementById('bg');
-            if (bg) { bg.style.transform='scale(1)'; bg.style.filter='blur(0px)'; bg.style.transition='ease 1.5s'; bg.style.opacity='1'; }
-            const cv = this.$refs.cover;
-            if (cv) cv.style.cssText = 'opacity:1;transition:ease 1.5s;';
-            const sc = this.$refs.section;
-            if (sc) {
-                sc.style.transform = 'scale(1)';
-                sc.style.opacity = '1';
-                sc.style.filter = 'blur(0px)';
-            }
-            setTimeout(() => iziToast.show({ timeout:2500, icon:false, title:this.greetingText, message:'欢迎来到我的主页' }), 800);
-            if (/Mobile/i.test(navigator.userAgent)) { const p = document.getElementById('g-pointer-2'); if (p) p.style.display = 'none'; }
-        });
+        if (document.readyState === 'complete') {
+            this.revealPage();
+        } else {
+            window.addEventListener('load', () => this.revealPage(), { once: true });
+        }
         setTimeout(() => { this.loadingText = '字体及文件加载可能需要一定时间'; }, 3000);
         this.updateTime();
         setInterval(() => this.updateTime(), 1000);
@@ -788,7 +802,7 @@ createApp({
                 this.showEngineMenu = false;
             }
         });
-        console.log('%c無名の主页 %c v5\n%c主页: https://www.imsyy.top\nGithub: https://github.com/imsyy/home',
+        console.log('%cMyIndex %c v1.0.0\n%cRepository: https://github.com/loker66fan/loker66fan.github.io',
             'font-size:20px;font-weight:600;color:rgb(244,167,89);',
             'font-size:12px;color:rgb(244,167,89);',
             'color:rgb(30,152,255);');

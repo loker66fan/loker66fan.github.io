@@ -1,51 +1,103 @@
-# 个人导航首页
+# MyIndex
 
-这是一个基于hsBUPT/hsBUPT.github.io项目，使用 Vue 3 全局版本实现的个人导航首页项目，适合部署为静态站点。页面优化集成了搜索、常用链接、天气、音乐播放器、壁纸切换以及响应式布局优化。
+A polished personal start page built with Vue 3 and plain static assets.
 
-## 当前特性
+This project is designed for static deployment and combines search, curated links, weather, music playback, wallpaper switching, and responsive layout refinements in a single homepage. It keeps the deployment model simple while still providing a richer interactive experience than a plain HTML landing page.
 
-- Vue 驱动的首页交互
-- 多搜索引擎切换与自定义搜索引擎
-- 快捷搜索预设词
-- 一言展示与实时时间
-- 天气弹窗
-- 音乐播放器与歌单管理
-- 音乐播放器支持自定义网易云歌单 ID，并使用折叠面板管理配置
-- 壁纸切换与本地持久化
-- 非默认壁纸源支持重复点击刷新一张新背景
-- 可滚动布局与移动端适配
+## Preview
 
-## 运行方式
+![MyIndex desktop preview](./assets/screenshots/home-desktop.png)
 
-这是纯静态项目，不依赖构建工具。
+## Features
 
-直接用任意静态服务器打开项目目录即可，例如：
+- Vue-powered single-page homepage without a build step
+- Search overlay with engine switching and custom search engine support
+- Quick search presets for common workflows
+- Curated link cards for frequently used destinations
+- Real-time clock and hitokoto quote panel
+- Weather modal powered by `wttr.in`
+- Music player with NetEase playlist ID configuration and local fallback tracks
+- Wallpaper switching with persisted preferences
+- Mobile-friendly layout and interaction adjustments
 
-```bash
-python -m http.server 8080
+## Tech Stack
+
+- Vue 3 global build
+- Vanilla JavaScript
+- Custom CSS
+- Bootstrap grid utilities
+- Font Awesome
+- iziToast
+- APlayer
+- js-cookie
+
+## Project Structure
+
+```text
+.
+├── index.html
+├── 404.html
+├── css/
+├── js/
+├── img/
+├── vendor/
+├── docs/
+├── assets/screenshots/
+├── README.md
+├── README.zh-CN.md
+├── PROJECT_SUMMARY.md
+├── CHANGELOG.md
+├── VERSION
+├── LICENSE
+└── vercel.json
 ```
 
-然后访问：
+## Getting Started
+
+No build tool is required.
+
+Serve the repository with any static file server:
+
+```bash
+python3 -m http.server 8080
+```
+
+Then open:
 
 ```text
 http://localhost:8080
 ```
 
-## 主要文件
+## Deployment
 
-- `index.html`：页面入口与模板结构
-- `js/app.js`：主应用逻辑
-- `js/weather-app.js`：天气模块
-- `css/theme.css`：主样式
-- `css/weather.css`：天气弹窗样式
-- `css/music-player.css`：播放器样式
+This repository is suitable for:
 
-## 文档
+- GitHub Pages
+- Vercel
+- Netlify
+- Any static hosting platform
 
-- [技术文档](./docs/技术文档.md)
-- [开发日志](./docs/开发日志.md)
-- [学习日志](./docs/学习日志.md)
+The current repository remote is configured for GitHub Pages publishing via `loker66fan/loker66fan.github.io`.
 
-## 说明
+## Customization
 
-项目最初参考了 imsyy 的个人主页实现，后续已围绕个人导航场景持续做了结构和交互重构。
+- Edit site content and layout in `index.html`
+- Update homepage behavior in `js/app.js`
+- Adjust the main visual style in `css/theme.css`
+- Replace default wallpaper and icons in `img/icon/`
+- Modify PWA metadata in `manifest.json`
+
+## Documentation
+
+- [Chinese README](./README.zh-CN.md)
+- [Project Summary](./PROJECT_SUMMARY.md)
+- [Changelog](./CHANGELOG.md)
+- [Technical Notes](./docs/技术文档.md)
+- [Development Log](./docs/开发日志.md)
+- [Learning Log](./docs/学习日志.md)
+
+## License
+
+This repository is released under the [MIT License](./LICENSE).
+
+The current project has been substantially customized and extended from earlier personal homepage work inspired by `imsyy/home`. Keep the existing attribution when redistributing substantial portions of the codebase.
