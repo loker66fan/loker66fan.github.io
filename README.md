@@ -1,37 +1,41 @@
 # MyIndex
 
-A polished personal start page built with Vue 3 and plain static assets.
+MyIndex is a Vue-powered personal start page built for static hosting. It brings together search, curated shortcuts, weather, music playback, wallpaper switching, and responsive UI refinements in a single homepage without introducing a build pipeline.
 
-This project is designed for static deployment and combines search, curated links, weather, music playback, wallpaper switching, and responsive layout refinements in a single homepage. It keeps the deployment model simple while still providing a richer interactive experience than a plain HTML landing page.
+## Overview
 
-## Preview
+The project is intended for users who want a customizable browser start page or lightweight personal landing page that can be deployed directly to GitHub Pages, Vercel, Netlify, or any comparable static host. The codebase stays approachable by relying on plain HTML, CSS, and JavaScript files organized around a Vue 3 runtime.
 
-![MyIndex desktop preview](./assets/screenshots/home-desktop.png)
+## Screenshots
+
+| Desktop | Mobile |
+| --- | --- |
+| ![MyIndex desktop preview](./assets/screenshots/home-desktop.png) | ![MyIndex mobile preview](./assets/screenshots/home-mobile.png) |
 
 ## Features
 
-- Vue-powered single-page homepage without a build step
-- Search overlay with engine switching and custom search engine support
-- Quick search presets for common workflows
-- Curated link cards for frequently used destinations
-- Real-time clock and hitokoto quote panel
+- Single-page homepage powered by the Vue 3 global build
+- Search overlay with engine switching and custom search engine management
+- Quick search presets for common browsing and workflow entry points
+- Curated link cards for frequently used websites and tools
+- Real-time clock and hitokoto quote display
 - Weather modal powered by `wttr.in`
-- Music player with NetEase playlist ID configuration and local fallback tracks
-- Wallpaper switching with persisted preferences
-- Mobile-friendly layout and interaction adjustments
+- Music player with configurable NetEase playlist support and local fallback tracks
+- Wallpaper switching with persisted user preferences
+- Mobile-oriented layout and interaction refinements
 
-## Tech Stack
+## Technology
 
-- Vue 3 global build
+- Vue 3
 - Vanilla JavaScript
 - Custom CSS
 - Bootstrap grid utilities
 - Font Awesome
-- iziToast
 - APlayer
+- iziToast
 - js-cookie
 
-## Project Structure
+## Repository Layout
 
 ```text
 .
@@ -54,15 +58,15 @@ This project is designed for static deployment and combines search, curated link
 
 ## Getting Started
 
-No build tool is required.
+No package manager or build tool is required.
 
-Serve the repository with any static file server:
+Start a local static server from the repository root:
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Then open:
+Open the site in a browser:
 
 ```text
 http://localhost:8080
@@ -70,34 +74,37 @@ http://localhost:8080
 
 ## Deployment
 
-This repository is suitable for:
+MyIndex is designed for static deployment and can be published to:
 
 - GitHub Pages
 - Vercel
 - Netlify
-- Any static hosting platform
-
-The current repository remote is configured for GitHub Pages publishing via `loker66fan/loker66fan.github.io`.
+- Any standard static hosting provider
 
 ## Customization
 
-- Edit site content and layout in `index.html`
-- Update homepage behavior in `js/app.js`
-- Adjust the main visual style in `css/theme.css`
-- Replace default wallpaper and icons in `img/icon/`
-- Modify PWA metadata in `manifest.json`
+- Edit page structure and copy in `index.html`
+- Update application behavior in `js/app.js`
+- Adjust the visual theme in `css/theme.css`
+- Replace wallpaper and icon assets in `img/icon/`
+- Update PWA metadata in `manifest.json`
+
+## Release Metadata
+
+- Current version: [`VERSION`](./VERSION)
+- License: [MIT](./LICENSE)
+- Project summary: [`PROJECT_SUMMARY.md`](./PROJECT_SUMMARY.md)
+- Changelog: [`CHANGELOG.md`](./CHANGELOG.md)
 
 ## Documentation
 
 - [Chinese README](./README.zh-CN.md)
-- [Project Summary](./PROJECT_SUMMARY.md)
-- [Changelog](./CHANGELOG.md)
 - [Technical Notes](./docs/技术文档.md)
 - [Development Log](./docs/开发日志.md)
 - [Learning Log](./docs/学习日志.md)
 
-## License
+## Attribution
 
 This repository is released under the [MIT License](./LICENSE).
 
-The current project has been substantially customized and extended from earlier personal homepage work inspired by `imsyy/home`. Keep the existing attribution when redistributing substantial portions of the codebase.
+The current codebase has been substantially customized and extended from earlier personal homepage work inspired by `imsyy/home`. Keep the existing attribution when redistributing substantial portions of the project.

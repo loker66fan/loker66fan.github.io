@@ -6,7 +6,7 @@ MyIndex
 
 ## One-Line Description
 
-A Vue-powered personal start page for static hosting, combining search, links, weather, music, wallpapers, and responsive UI into a single homepage.
+A Vue-powered personal start page for static hosting that combines search, curated links, weather, music playback, wallpapers, and responsive UI into a single homepage.
 
 ## Audience
 
@@ -19,7 +19,7 @@ A Vue-powered personal start page for static hosting, combining search, links, w
 - No build step required
 - Easy to deploy to static hosting providers
 - Richer interaction than a plain bookmark page
-- Lightweight customization through HTML, CSS, and JavaScript files
+- Straightforward customization through HTML, CSS, and JavaScript files
 
 ## Primary Capabilities
 
@@ -27,7 +27,7 @@ A Vue-powered personal start page for static hosting, combining search, links, w
 - Quick-access link dashboard
 - Real-time clock and quote widget
 - Weather popup
-- Embedded music player with configurable NetEase playlist
+- Embedded music player with configurable NetEase playlist support
 - Wallpaper switching with persisted settings
 - Mobile-oriented layout refinements
 
@@ -39,8 +39,9 @@ Static site deployment via GitHub Pages, Vercel, Netlify, or equivalent hosts.
 
 Prepared for public repository publishing with:
 
-- English and Chinese README files
-- Explicit version file
+- Formal English and Chinese README files
+- Explicit version metadata
 - Changelog
 - MIT license
-- Screenshot assets for README preview
+- Project summary
+- Desktop and mobile screenshot assets for README previews

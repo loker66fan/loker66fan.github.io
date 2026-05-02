@@ -46,7 +46,7 @@ def main():
     os.chdir(ROOT)
     server = ReusableTCPServer(("127.0.0.1", 0), SilentHandler)
     port = server.server_address[1]
-    url = f"http://127.0.0.1:{port}/index.html"
+    url = f"http://127.0.0.1:{port}/index.html?capture=1"
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
     time.sleep(0.8)

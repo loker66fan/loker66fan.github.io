@@ -1,4 +1,5 @@
 const { createApp } = Vue;
+const CAPTURE_MODE = new URLSearchParams(window.location.search).get('capture') === '1';
 
 const LINKS = [
     { url: 'https://www.csdn.net/', icon: 'fa-solid fa-blog', name: 'CSDN', desc: '技术文章与问题检索', accent: '#38bdf8', tag: '技术社区' },
@@ -69,6 +70,9 @@ const SEARCH_PRESETS = [
 ];
 
 function loadSearchEngines() {
+    if (CAPTURE_MODE) {
+        return DEFAULT_ENGINES.map(engine => ({ ...engine, icon: '' }));
+    }
     try {
         const raw = Cookies.get('search_engines');
         if (raw) {
@@ -718,6 +722,12 @@ createApp({
             });
         },
         initWallpaper() {
+            if (CAPTURE_MODE) {
+                this.wallpaperType = '1';
+                const bg = document.getElementById('bg');
+                if (bg) this.applyWallpaper(bg, getWallpaperUrl('1'), false);
+                return;
+            }
             let s;
             try { const r = Cookies.get('bg_img'); if (r && r !== '{}') s = JSON.parse(r); } catch {}
             const t = (s && s.type) || '1';
@@ -747,11 +757,11 @@ createApp({
                 sc.style.opacity = '1';
                 sc.style.filter = 'blur(0px)';
             }
-            setTimeout(() => iziToast.show({ timeout:2500, icon:false, title:this.greetingText, message:'欢迎来到我的主页' }), 800);
-            if (/Mobile/i.test(navigator.userAgent)) {
-                const p = document.getElementById('g-pointer-2');
-                if (p) p.style.display = 'none';
+            if (!CAPTURE_MODE) {
+                setTimeout(() => iziToast.show({ timeout:2500, icon:false, title:this.greetingText, message:'欢迎来到我的主页' }), 800);
             }
+            const p = document.getElementById('g-pointer-2');
+            if (p && (CAPTURE_MODE || /Mobile/i.test(navigator.userAgent))) p.style.display = 'none';
         },
     },
     mounted() {
@@ -762,21 +772,30 @@ createApp({
             backgroundColor:'#00000040', titleColor:'#efefef', messageColor:'#efefef',
             icon:'Fontawesome', iconColor:'#efefef',
         });
+        if (CAPTURE_MODE) {
+            this.loadingText = 'Preparing repository preview...';
+            this.hitokotoText = 'A Vue-powered personal start page for static hosting.';
+            this.hitokotoFrom = 'Repository preview';
+        }
         this.initWallpaper();
         const n = new Date();
-        if (MOURNING_DAYS.includes((n.getMonth()+1) + '.' + n.getDate())) {
+        if (!CAPTURE_MODE && MOURNING_DAYS.includes((n.getMonth()+1) + '.' + n.getDate())) {
             this.mourning = true;
             setTimeout(() => iziToast.show({ timeout:14000, icon:'fa-solid fa-clock', message:'今天是中国国家纪念日' }), 4600);
         }
-        if (document.readyState === 'complete') {
+        if (CAPTURE_MODE) {
+            requestAnimationFrame(() => this.revealPage());
+        } else if (document.readyState === 'complete') {
             this.revealPage();
         } else {
             window.addEventListener('load', () => this.revealPage(), { once: true });
         }
-        setTimeout(() => { this.loadingText = '字体及文件加载可能需要一定时间'; }, 3000);
+        if (!CAPTURE_MODE) {
+            setTimeout(() => { this.loadingText = '字体及文件加载可能需要一定时间'; }, 3000);
+        }
         this.updateTime();
         setInterval(() => this.updateTime(), 1000);
-        this.fetchHitokoto();
+        if (!CAPTURE_MODE) this.fetchHitokoto();
         window.addEventListener('resize', () => this.onResize());
         document.addEventListener('keydown', e => {
             if (e.key === ' ' && !this.boxOpen && !this.searchOpen) {
@@ -785,18 +804,22 @@ createApp({
             }
         });
         const el = document.getElementById('g-pointer-2');
-        if (el) {
+        if (el && !CAPTURE_MODE) {
             const hw = el.offsetWidth / 2;
             document.addEventListener('mousemove', e => {
                 requestAnimationFrame(() => {
                     el.style.transform = 'translate3d(' + (e.clientX - hw) + 'px,' + (e.clientY - hw) + 'px,0)';
                 });
             });
+        } else if (el) {
+            el.style.display = 'none';
         }
-        document.oncontextmenu = () => {
-            iziToast.show({ timeout:2000, icon:'fa-solid fa-circle-exclamation', message:'为了浏览体验，本站禁用右键' });
-            return false;
-        };
+        if (!CAPTURE_MODE) {
+            document.oncontextmenu = () => {
+                iziToast.show({ timeout:2000, icon:'fa-solid fa-circle-exclamation', message:'为了浏览体验，本站禁用右键' });
+                return false;
+            };
+        }
         document.addEventListener('click', (e) => {
             if (this.showEngineMenu && !e.target.closest('.engine-menu') && !e.target.closest('.search-engine-switch')) {
                 this.showEngineMenu = false;
