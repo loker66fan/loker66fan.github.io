@@ -1174,7 +1174,6 @@ footer {
 }
 
 .iziToast>.iziToast-close {
-    background: url(https://cdn.jsdelivr.net/gh/imsyy/file/pic/close.png) no-repeat 50% 50% !important;
     background-size: 8px !important;
 }
 

@@ -15,13 +15,13 @@ The project is intended for users who want a customizable browser start page or 
 ## Features
 
 - Single-page homepage powered by the Vue 3 global build
-- Search overlay with engine switching and custom search engine management
+- Search overlay with engine switching, icon-based defaults, and custom search engine management
 - Quick search presets for common browsing and workflow entry points
 - Curated link cards for frequently used websites and tools
 - Real-time clock and hitokoto quote display
-- Weather modal powered by `wttr.in`
+- Weather modal powered by `wttr.in` with Chinese forecast normalization, timeout handling, and local cache reuse
 - Music player with configurable NetEase playlist support and local fallback tracks
-- Wallpaper switching with persisted user preferences
+- Wallpaper switching with persisted user preferences and refreshable Bing, scenery, and anime sources
 - Mobile-oriented layout and interaction refinements
 
 ## Technology
@@ -72,6 +72,8 @@ Open the site in a browser:
 http://localhost:8080
 ```
 
+For full functionality, open the page through `http://` or `https://` instead of `file://`. Browsers commonly block the weather request when the page is opened directly from the filesystem.
+
 ## Deployment
 
 MyIndex is designed for static deployment and can be published to:
@@ -84,7 +86,8 @@ MyIndex is designed for static deployment and can be published to:
 ## Customization
 
 - Edit page structure and copy in `index.html`
-- Update application behavior in `js/app.js`
+- Update homepage behavior in `js/app.js`
+- Update weather popup behavior in `js/weather-app.js`
 - Adjust the visual theme in `css/theme.css`
 - Replace wallpaper and icon assets in `img/icon/`
 - Update PWA metadata in `manifest.json`

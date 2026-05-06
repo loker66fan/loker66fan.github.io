@@ -5,7 +5,7 @@ const LINKS = [
     { url: 'https://www.csdn.net/', icon: 'fa-solid fa-blog', name: 'CSDN', desc: '技术文章与问题检索', accent: '#38bdf8', tag: '技术社区' },
     { url: 'https://pan.baidu.com/', icon: 'fa-solid fa-cloud', name: '百度网盘', desc: '文件同步与资料管理', accent: '#60a5fa', tag: '云存储' },
     { url: 'https://music.163.com/', icon: 'fa-solid fa-music', name: '网易云音乐', desc: '找歌、歌单和日常陪伴', accent: '#fb7185', tag: '音乐娱乐' },
-    { url: 'https://www.bing.com/', icon: 'fa-solid fa-compass', name: 'Bing', desc: '默认搜索与灵感入口', accent: '#818cf8', tag: '搜索入口' },
+    { url: 'https://cn.bing.com/', icon: 'fa-solid fa-compass', name: 'Bing', desc: '默认搜索与灵感入口', accent: '#818cf8', tag: '搜索入口' },
     { url: 'https://www.loker.ltd', icon: 'fa-solid fa-note-sticky fa-beat', name: '个人笔记博客', desc: '沉淀碎片知识与备忘', accent: '#34d399', tag: '知识沉淀' },
     { url: 'https://a.loker.love', icon: 'fa-solid fa-blog fa-beat-fade', name: '个人文章博客', desc: '输出长文与项目记录', accent: '#f59e0b', tag: '内容输出' },
 ];
@@ -55,12 +55,13 @@ const DEFAULT_PLAYLIST_ID = '6924865524';
 const MUSIC_PLAYLIST_COOKIE_KEY = 'music_playlist_id';
 
 const DEFAULT_ENGINES = [
-    { id: 'bing',    name: 'Bing',    url: 'https://cn.bing.com/search?q={s}', icon: 'https://www.bing.com/favicon.ico' },
-    { id: 'google',  name: 'Google',  url: 'https://www.google.com/search?q={s}', icon: 'https://www.google.com/favicon.ico' },
-    { id: 'baidu',   name: '百度',     url: 'https://www.baidu.com/s?wd={s}', icon: 'https://www.baidu.com/favicon.ico' },
-    { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q={s}', icon: 'https://duckduckgo.com/favicon.ico' },
-    { id: 'github',  name: 'GitHub',  url: 'https://github.com/search?q={s}', icon: 'https://github.com/favicon.ico' },
+    { id: 'bing',       name: 'Bing',       url: 'https://cn.bing.com/search?q={s}', icon: '', iconClass: 'fa-brands fa-microsoft' },
+    { id: 'google',     name: 'Google',     url: 'https://www.google.com/search?q={s}', icon: '', iconClass: 'fa-brands fa-google' },
+    { id: 'baidu',      name: '百度',        url: 'https://www.baidu.com/s?wd={s}', icon: '', iconClass: 'fa-solid fa-magnifying-glass' },
+    { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q={s}', icon: '', iconClass: 'fa-solid fa-magnifying-glass' },
+    { id: 'github',     name: 'GitHub',     url: 'https://github.com/search?q={s}', icon: '', iconClass: 'fa-brands fa-github' },
 ];
+const DEFAULT_ENGINE_MAP = Object.fromEntries(DEFAULT_ENGINES.map(engine => [engine.id, engine]));
 
 const SEARCH_PRESETS = [
     { label: 'Vue 动效', query: 'Vue 3 页面动效', icon: 'fa-brands fa-vuejs' },
@@ -69,22 +70,43 @@ const SEARCH_PRESETS = [
     { label: '天气查看', query: '青岛天气', icon: 'fa-solid fa-cloud-sun' },
 ];
 
+function cloneDefaultEngines() {
+    return DEFAULT_ENGINES.map(engine => ({ ...engine }));
+}
+
+function keepLocalEngineIcon(icon) {
+    return typeof icon === 'string' && /^(?:\.{1,2}\/|\/|data:)/.test(icon);
+}
+
+function normalizeSearchEngine(engine) {
+    if (!engine || typeof engine !== 'object' || !engine.id || !engine.name || !engine.url) return null;
+    const base = DEFAULT_ENGINE_MAP[engine.id];
+    if (base) return { ...base };
+    return {
+        ...engine,
+        icon: keepLocalEngineIcon(engine.icon) ? engine.icon : '',
+        iconClass: typeof engine.iconClass === 'string' ? engine.iconClass : '',
+    };
+}
+
 function loadSearchEngines() {
-    if (CAPTURE_MODE) {
-        return DEFAULT_ENGINES.map(engine => ({ ...engine, icon: '' }));
-    }
+    if (CAPTURE_MODE) return cloneDefaultEngines();
     try {
         const raw = Cookies.get('search_engines');
         if (raw) {
             const saved = JSON.parse(raw);
-            if (Array.isArray(saved) && saved.length) return saved;
+            if (Array.isArray(saved) && saved.length) {
+                const normalized = saved.map(normalizeSearchEngine).filter(Boolean);
+                if (normalized.length) return normalized;
+            }
         }
     } catch {}
-    return [...DEFAULT_ENGINES];
+    return cloneDefaultEngines();
 }
 
 function saveSearchEngines(engines) {
-    Cookies.set('search_engines', JSON.stringify(engines), { expires: 36500 });
+    const normalized = Array.isArray(engines) ? engines.map(normalizeSearchEngine).filter(Boolean) : cloneDefaultEngines();
+    Cookies.set('search_engines', JSON.stringify(normalized), { expires: 36500 });
 }
 
 function loadCurrentEngineId() {
@@ -134,7 +156,7 @@ function getWallpaperUrl(type, nonce = getWallpaperRequestKey()) {
         case '3':
             return 'https://api.btstu.cn/sjbz/api.php?lx=fengjing&method=mobile&refresh=' + nonce;
         case '4':
-            return 'https://www.dmoe.cc/random.php?sort=动漫&refresh=' + nonce;
+            return 'https://api.btstu.cn/sjbz/api.php?lx=dongman&method=mobile&refresh=' + nonce;
         default:
             return './img/icon/云朵 旷野郊游 线条小狗高清电脑壁纸全屏_彼岸壁纸.jpg';
     }
@@ -368,7 +390,7 @@ createApp({
                 return;
             }
             const id = 'custom_' + Date.now();
-            const newEngine = { id, name, url, icon: '', custom: true };
+            const newEngine = { id, name, url, icon: '', iconClass: '', custom: true };
             this.searchEngines.push(newEngine);
             this.currentEngineId = id;
             saveSearchEngines(this.searchEngines);
@@ -722,16 +744,18 @@ createApp({
             });
         },
         initWallpaper() {
+            let t = '1';
+            if (!CAPTURE_MODE) {
+                let s;
+                try { const r = Cookies.get('bg_img'); if (r && r !== '{}') s = JSON.parse(r); } catch {}
+                t = (s && s.type) || t;
+            }
+            this.wallpaperType = t;
             if (CAPTURE_MODE) {
-                this.wallpaperType = '1';
                 const bg = document.getElementById('bg');
-                if (bg) this.applyWallpaper(bg, getWallpaperUrl('1'), false);
+                if (bg) this.applyWallpaper(bg, getWallpaperUrl(t), false);
                 return;
             }
-            let s;
-            try { const r = Cookies.get('bg_img'); if (r && r !== '{}') s = JSON.parse(r); } catch {}
-            const t = (s && s.type) || '1';
-            this.wallpaperType = t;
             this.setWallpaper(t);
         },
         openWeather() { if (window.__weatherApp) window.__weatherApp.open(); },
@@ -757,9 +781,7 @@ createApp({
                 sc.style.opacity = '1';
                 sc.style.filter = 'blur(0px)';
             }
-            if (!CAPTURE_MODE) {
-                setTimeout(() => iziToast.show({ timeout:2500, icon:false, title:this.greetingText, message:'欢迎来到我的主页' }), 800);
-            }
+            if (!CAPTURE_MODE) setTimeout(() => iziToast.show({ timeout:2500, icon:false, title:this.greetingText, message:'欢迎来到我的主页' }), 800);
             const p = document.getElementById('g-pointer-2');
             if (p && (CAPTURE_MODE || /Mobile/i.test(navigator.userAgent))) p.style.display = 'none';
         },
@@ -772,30 +794,30 @@ createApp({
             backgroundColor:'#00000040', titleColor:'#efefef', messageColor:'#efefef',
             icon:'Fontawesome', iconColor:'#efefef',
         });
-        if (CAPTURE_MODE) {
-            this.loadingText = 'Preparing repository preview...';
-            this.hitokotoText = 'A Vue-powered personal start page for static hosting.';
-            this.hitokotoFrom = 'Repository preview';
-        }
+        if (CAPTURE_MODE) Object.assign(this, {
+            loadingText: 'Preparing repository preview...',
+            hitokotoText: 'A Vue-powered personal start page for static hosting.',
+            hitokotoFrom: 'Repository preview',
+        });
         this.initWallpaper();
         const n = new Date();
         if (!CAPTURE_MODE && MOURNING_DAYS.includes((n.getMonth()+1) + '.' + n.getDate())) {
             this.mourning = true;
             setTimeout(() => iziToast.show({ timeout:14000, icon:'fa-solid fa-clock', message:'今天是中国国家纪念日' }), 4600);
         }
-        if (CAPTURE_MODE) {
-            requestAnimationFrame(() => this.revealPage());
-        } else if (document.readyState === 'complete') {
-            this.revealPage();
-        } else {
-            window.addEventListener('load', () => this.revealPage(), { once: true });
-        }
-        if (!CAPTURE_MODE) {
-            setTimeout(() => { this.loadingText = '字体及文件加载可能需要一定时间'; }, 3000);
-        }
+        const reveal = () => this.revealPage();
+        if (CAPTURE_MODE || document.readyState === 'complete') requestAnimationFrame(reveal);
+        else window.addEventListener('load', reveal, { once: true });
         this.updateTime();
         setInterval(() => this.updateTime(), 1000);
-        if (!CAPTURE_MODE) this.fetchHitokoto();
+        if (!CAPTURE_MODE) {
+            setTimeout(() => { this.loadingText = '字体及文件加载可能需要一定时间'; }, 3000);
+            this.fetchHitokoto();
+            document.oncontextmenu = () => {
+                iziToast.show({ timeout:2000, icon:'fa-solid fa-circle-exclamation', message:'为了浏览体验，本站禁用右键' });
+                return false;
+            };
+        }
         window.addEventListener('resize', () => this.onResize());
         document.addEventListener('keydown', e => {
             if (e.key === ' ' && !this.boxOpen && !this.searchOpen) {
@@ -811,14 +833,6 @@ createApp({
                     el.style.transform = 'translate3d(' + (e.clientX - hw) + 'px,' + (e.clientY - hw) + 'px,0)';
                 });
             });
-        } else if (el) {
-            el.style.display = 'none';
-        }
-        if (!CAPTURE_MODE) {
-            document.oncontextmenu = () => {
-                iziToast.show({ timeout:2000, icon:'fa-solid fa-circle-exclamation', message:'为了浏览体验，本站禁用右键' });
-                return false;
-            };
         }
         document.addEventListener('click', (e) => {
             if (this.showEngineMenu && !e.target.closest('.engine-menu') && !e.target.closest('.search-engine-switch')) {

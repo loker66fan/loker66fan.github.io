@@ -55,7 +55,8 @@
             <!-- 搜索引擎选择器 -->
             <div class="search-engine-bar" v-show="(!searchOpen || searchClosing) && !showEngineMenu" :class="{ leaving: searchOpen || searchClosing }">
                 <div class="engine-badge" @click="cycleSearchEngine" :title="'当前: ' + currentEngine.name + ' (点击切换)'">
-                    <img v-if="currentEngine.icon" class="engine-favicon" :src="currentEngine.icon" />
+                    <i v-if="currentEngine.iconClass" :class="[currentEngine.iconClass, 'engine-favicon-icon']"></i>
+                    <img v-else-if="currentEngine.icon" class="engine-favicon" :src="currentEngine.icon" />
                     <i v-else class="fa-solid fa-magnifying-glass"></i>
                     <span class="engine-name">{{ currentEngine.name }}</span>
                 </div>
@@ -65,7 +66,8 @@
                 <div class="search-line" :class="{ active: searchVisible && !searchClosing }"></div>
                 <label v-show="!searchText">请输入....</label>
                 <div class="search-engine-switch" @click.stop="showEngineMenu = !showEngineMenu" :title="currentEngine.name">
-                    <img v-if="currentEngine.icon" class="engine-favicon-small" :src="currentEngine.icon" />
+                    <i v-if="currentEngine.iconClass" :class="[currentEngine.iconClass, 'engine-favicon-small-icon']"></i>
+                    <img v-else-if="currentEngine.icon" class="engine-favicon-small" :src="currentEngine.icon" />
                     <i v-else class="fa-solid fa-magnifying-glass"></i>
                 </div>
                 <span class="fas fa-search" @click="doSearch"></span>
@@ -75,7 +77,8 @@
                 <div class="engine-menu-item" v-for="e in searchEngines" :key="e.id"
                      :class="{ active: e.id === currentEngine.id }"
                      @click="selectEngine(e.id); showEngineMenu = false">
-                    <img v-if="e.icon" class="engine-favicon-small" :src="e.icon" />
+                    <i v-if="e.iconClass" :class="[e.iconClass, 'engine-favicon-small-icon']"></i>
+                    <img v-else-if="e.icon" class="engine-favicon-small" :src="e.icon" />
                     <i v-else class="fa-solid fa-magnifying-glass"></i>
                     <span>{{ e.name }}</span>
                     <i v-if="e.id === currentEngine.id" class="fa-solid fa-check" style="margin-left:auto;color:#a78bfa;"></i>
@@ -319,7 +322,8 @@
                                         <div class="engine-config-item" v-for="e in searchEngines" :key="e.id"
                                              :class="{ active: e.id === currentEngine.id }"
                                              @click="selectEngine(e.id)">
-                                            <img v-if="e.icon" class="engine-favicon" :src="e.icon" style="width:20px;height:20px;" />
+                                            <i v-if="e.iconClass" :class="[e.iconClass, 'engine-favicon-icon']" style="width:20px;height:20px;"></i>
+                                            <img v-else-if="e.icon" class="engine-favicon" :src="e.icon" style="width:20px;height:20px;" />
                                             <i v-else class="fa-solid fa-magnifying-glass"></i>
                                             <span>{{ e.name }}</span>
                                             <i v-if="e.id === currentEngine.id" class="fa-solid fa-circle-check" style="color:#a78bfa;flex-shrink:0;"></i>
@@ -339,7 +343,7 @@
                                             </button>
                                         </div>
                                         <p style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:6px;">
-                                            例如：<code style="color:rgba(255,255,255,0.5);">https://www.google.com/search?q={s}</code>
+                                            例如：<code style="color:rgba(255,255,255,0.5);">https://cn.bing.com/search?q={s}</code>
                                         </p>
                                     </div>
                                 </div>
@@ -484,6 +488,6 @@
 <script src="./vendor/aplayer/APlayer.min.js"></script>
 <script src="./vendor/izitoast/iziToast.min.js"></script>
 <script src="./js/app.js?v=9"></script>
-<script src="./js/weather-app.js?v=2"></script>
+<script src="./js/weather-app.js?v=4"></script>
 </body>
 </html>
